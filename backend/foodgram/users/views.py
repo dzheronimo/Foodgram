@@ -1,15 +1,14 @@
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListCreateAPIView
-from rest_framework import permissions
-from users.models import User
-from users.serializers import UserSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.token_blacklist.models import (
+    OutstandingToken, BlacklistedToken
+)
+
+from api.views import StandartResultsSetPagination
+
+from djoser.views import UserViewSet
 
 
-class UserViewSet(ListCreateAPIView):
-    permission_classes = [permissions.AllowAny,]
-    serializer_class = UserSerializer
-
-
-    # def create(self, request, *args, **kwargs):
-
-# Create your views here.
+class PaginatedUserViewSet(UserViewSet):
+    pagination_class = StandartResultsSetPagination

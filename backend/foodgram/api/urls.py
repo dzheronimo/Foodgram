@@ -1,15 +1,19 @@
 from django.urls import path, include
-from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
-from users.views import UserViewSet
+
+from recipes.views import ListTagViewSet, RecipeViewSet, IngredientsViewSet
 
 router = DefaultRouter()
 
-# router.register('users', UserViewSet, basename='users')
+router.register('tags', ListTagViewSet)
+router.register(r'tags/?P(<id>\d+)', ListTagViewSet)
+router.register('recipes', RecipeViewSet)
+router.register('ingredients', IngredientsViewSet)
+router.register('ingredients/?P(<id>\d+)', IngredientsViewSet)
 
 
 urlpatterns = [
-    path('api-token-auth/', views.obtain_auth_token),
-    path('users/', UserViewSet.as_view(), name='users'),
-    path('', include(router.urls), name='api')
+    path('', include('users.urls'), name='users'),
+    path('', include(router.urls)),
+    # path('tags/', ListTag.as_view(), name='tag')
 ]
