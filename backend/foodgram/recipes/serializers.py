@@ -40,7 +40,7 @@ class ListTagSerializer(serializers.ModelSerializer):
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64')
+            format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
 
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
@@ -67,43 +67,12 @@ class IngredientAmountRecipeSerializer(serializers.ModelSerializer):
         recipe = obj.recipes3
         return obj
 
-
     class Meta:
         model = IngredientAmountRecipe
         fields = ['id', 'name', 'measurement_unit']
 
 
-
-class GetRecipeSerializer(serializers.ModelSerializer):
-    tags = ListTagSerializer(many=True, read_only=True)
-    author = AuthorSerializer(read_only=True)
-    image = Base64ImageField(required=True, allow_null=False)
-    # ingredients = IngredientSerializer(many=True, read_only=True)
-    # ingredients = serializers.SerializerMethodField()
-    ingredients = IngredientAmountRecipeSerializer(many=True)
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Recipe
-        fields = ['id', 'tags', 'author', 'image', 'ingredients', 'is_favorited',
-                  'is_in_shopping_cart', 'name', 'text',
-                  'cooking_time']
-
-    def get_is_favorited(self, obj):
-        favorites = obj.is_favorite.all()
-        if favorites:
-            return True
-        return False
-
-    def get_is_in_shopping_cart(self, obj):
-        cart = obj.is_in_shopping_cart.all()
-        if cart:
-            return True
-        return False
-
-
-class CreateRecipeSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
     tags = ListTagSerializer(many=True, read_only=True)
     author = AuthorSerializer(read_only=True)
     ingredients = IngredientAmountRecipeSerializer(many=True, read_only=True)
@@ -114,12 +83,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ['id', 'tags', 'author', 'ingredients', 'is_favorited',
-                  'is_in_shopping_cart', 'name', 'text',
+                  'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time']
-
-    # def to_representation(self, instance):
-    #     serializer = GetRecipeSerializer(instance)
-    #     return serializer.data
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
@@ -165,6 +130,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
         instance.cooking_time = validated_data.get('cooking_time', instance.cooking_time)
+        instance.image = validated_data.get('image', instance.image)
 
         if 'tags' in validated_data:
             tags_data = validated_data.pop('tags')
@@ -180,7 +146,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                         ingredient=ingredient_instance,
                         amount=ingredient.get('amount')
                     )
-            # print(deleted)
 
         instance.save()
         return instance
