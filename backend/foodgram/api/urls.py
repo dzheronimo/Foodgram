@@ -7,7 +7,7 @@ router = DefaultRouter()
 
 router.register('tags', ListTagViewSet)
 router.register(r'tags/?P(<id>\d+)', ListTagViewSet)
-router.register('recipes', RecipeViewSet)
+router.register('recipes', RecipeViewSet, basename='recipes')
 router.register('ingredients', IngredientsViewSet)
 router.register('ingredients/?P(<id>\d+)', IngredientsViewSet)
 

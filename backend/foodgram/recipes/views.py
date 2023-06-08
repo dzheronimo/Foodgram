@@ -1,9 +1,10 @@
+from django.db.models import F
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 from rest_framework import permissions
 
 from .models import Tag, Recipe, Ingredient, IngredientAmountRecipe
-from .serializers import (ListTagSerializer, IngredientSerializer, GetRecipeSerializer
+from .serializers import (ListTagSerializer, IngredientSerializer, CreateRecipeSerializer, GetRecipeSerializer
                           )
 from api.views import StandartResultsSetPagination
 
@@ -28,14 +29,15 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
-    # serializer_class = GetRecipeSerializer
+    serializer_class = CreateRecipeSerializer
     pagination_class = StandartResultsSetPagination
     permission_classes = [permissions.AllowAny, ]
+
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return GetRecipeSerializer
-
+        return CreateRecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
