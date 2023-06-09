@@ -64,6 +64,16 @@ class IngredientAmountRecipeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit']
 
 
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    # name = serializers.StringRelatedField(read_only=True)
+    # cooking_time = serializers.ReadOnlyField()
+    # id = serializers.ReadOnlyField()
+    # image = serializers.ReadOnlyField()
+    class Meta:
+        model = Recipe
+        fields = ['id', 'name', 'image', 'cooking_time']
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     tags = ListTagSerializer(many=True, read_only=True)
     author = AuthorSerializer(read_only=True)
@@ -142,9 +152,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def get_is_favorited(self, obj):
-        favorites = obj.is_favorite.all()
-        if favorites:
-            return True
+        if self.context:
+            user = self.context['request'].user
+            favorites = obj.is_favorite.all()
+            if user.is_authenticated and user in favorites:
+                return True
         return False
 
     def get_is_in_shopping_cart(self, obj):
@@ -152,3 +164,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         if cart:
             return True
         return False
+
+
+class FavoriteRecipeSerializer(serializers.ModelSerializer):
+    user = AuthorSerializer(read_only=True)
+    recipe = RecipeSerializer(read_only=True)
+    name = ShortRecipeSerializer(read_only=True)
+    image = ShortRecipeSerializer(read_only=True)
+    cooking_time = ShortRecipeSerializer(read_only=True)
+    class Meta:
+        model = FavoriteRecipes
+        fields = ('user', 'recipe', 'id', 'name', 'image', 'cooking_time')
+
+    def to_representation(self, instance):
+        serializer = ShortRecipeSerializer(instance)
+        return serializer.data
