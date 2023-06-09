@@ -29,14 +29,6 @@ class ListTagSerializer(serializers.ModelSerializer):
         return slug
 
 
-# class TagSerializer(serializers.ModelSerializer):
-#     id = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all())
-#
-#     class Meta:
-#         model = Tag
-#         fields = ['id']
-
-
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
@@ -104,7 +96,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"tags": "Для рецепта требуется минимум один tag"}
             )
-
         data['ingredients'] = ingredients
         data['tags'] = tags
 
