@@ -13,8 +13,8 @@ from .serializers import (ListTagSerializer, IngredientSerializer, RecipeSeriali
 from api.views import StandartResultsSetPagination
 
 
-class ListRetrieveModelMixin(ListModelMixin, RetrieveModelMixin,
-                             GenericViewSet):
+class PostDestroyModelMixin(
+        CreateModelMixin, DestroyModelMixin, GenericViewSet):
     pass
 
 
