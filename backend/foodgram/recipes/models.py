@@ -61,6 +61,15 @@ class FavoriteRecipes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='in_favorites')
 
+    class Meta:
+        verbose_name = 'Избранное'
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe',),
+                name='user_recipe'
+            )
+        ]
 
 class CartRecipes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
