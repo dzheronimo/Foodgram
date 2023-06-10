@@ -6,9 +6,10 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 from rest_framework import permissions, status
 
-from .models import Tag, Recipe, Ingredient, FavoriteRecipes
+from users.models import User
+from .models import Tag, Recipe, Ingredient, FavoriteRecipes, Subscription
 from .serializers import (ListTagSerializer, IngredientSerializer, RecipeSerializer, FavoriteRecipeSerializer,
-                          ShortRecipeSerializer
+                          ShortRecipeSerializer, SubscriptionSerializer
                           )
 from api.views import StandartResultsSetPagination
 
