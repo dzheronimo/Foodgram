@@ -7,7 +7,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from pytils.translit import slugify
 
-from .models import Tag, Ingredient, Recipe, IngredientAmountRecipe, FavoriteRecipes
+from .models import (
+    Tag, Ingredient, Recipe, IngredientAmountRecipe,
+    FavoriteRecipes, Subscription
+)
 from users.models import User
 
 
