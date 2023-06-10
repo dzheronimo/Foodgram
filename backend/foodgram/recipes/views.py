@@ -70,3 +70,54 @@ class RecipeViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class SubscriptionViewSet(ModelViewSet):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+    permission_classes = [permissions.AllowAny, ]
+    pagination_class = StandartResultsSetPagination
+
+    @action(detail=False,
+            methods=['GET', ]
+            )
+    def subscriptions(self, request):
+        subscriptions = self.queryset.filter(user=request.user)
+        serializer = self.serializer_class(subscriptions)
+        return Response({"aaaa":"wefwef"}, status=status.HTTP_200_OK)
+
+    @action(detail=True,
+            methods=['POST', 'DELETE', ]
+            )
+    def subscribe(self, request, pk):
+        user = request.user
+        author = get_object_or_404(User, id=pk)
+        subscription = Subscription.objects.filter(
+            user=user,
+            author=author
+        )
+
+        if request.method == 'POST':
+            if subscription.exists():
+                return Response(
+                    {"is_subscribed": "Вы уже подписаны на этого автора"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            new_subscription = Subscription.objects.create(
+                user=user,
+                author=author
+            )
+            serializer = SubscriptionSerializer(new_subscription)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.method == 'DELETE':
+            if not subscription.exists():
+                return Response(
+                    {"is_subscribed": "Вы не подписаны на этого автора"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            subscription.delete()
+            return Response(
+                {"is_subscribed": "Вы успешно отписаны"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
