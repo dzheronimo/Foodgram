@@ -56,6 +56,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    class Meta:
+        ordering = ['username']
     def __str__(self):
         return self.email
 
