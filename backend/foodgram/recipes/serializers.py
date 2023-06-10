@@ -41,6 +41,7 @@ class Base64ImageField(serializers.ImageField):
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
         return super().to_internal_value(data)
 
+
 class IngredientSerializer(serializers.ModelSerializer):
     # amount = serializers.SerializerMethodField()
     # amount = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.annotate(amount=Max('amount_ingredient__amount')))
@@ -56,6 +57,7 @@ class IngredientAmountRecipeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     measurement_unit = serializers.CharField()
+
     # amount = serializers.PrimaryKeyRelatedField(source='recipe', queryset=Recipe.objects.all())
 
     def get_amount(self, obj):
@@ -103,7 +105,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             if not Ingredient.objects.filter(pk=ingredient.get('id')):
                 raise serializers.ValidationError(
                     {"ingreients": "Можно выбрать только "
-                                  "существующий ингредиент!"}
+                                   "существующий ингредиент!"}
                 )
         if not tags:
             raise serializers.ValidationError(
@@ -175,6 +177,7 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
     name = ShortRecipeSerializer(read_only=True)
     image = ShortRecipeSerializer(read_only=True)
     cooking_time = ShortRecipeSerializer(read_only=True)
+
     class Meta:
         model = FavoriteRecipes
         fields = ('user', 'recipe', 'id', 'name', 'image', 'cooking_time')
