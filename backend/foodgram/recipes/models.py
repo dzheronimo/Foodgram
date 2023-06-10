@@ -91,3 +91,19 @@ class IngredientAmountRecipe(models.Model):
                 name='recipe_ingredient'
             )
         ]
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriber')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
+
+    class Meta:
+        verbose_name = 'Подписки'
+        ordering = ['author']
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'author', ),
+                name='user_author'
+            )
+        ]
