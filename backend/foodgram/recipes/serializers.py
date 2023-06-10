@@ -171,6 +171,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return False
 
 
+# Проверить!!!
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
     user = AuthorSerializer(read_only=True)
     recipe = RecipeSerializer(read_only=True)
@@ -185,3 +186,43 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         serializer = ShortRecipeSerializer(instance)
         return serializer.data
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    email = serializers.StringRelatedField(source='author', read_only=True)
+    id = serializers.PrimaryKeyRelatedField(source='author', read_only=True)
+    username = serializers.StringRelatedField(source='author', read_only=True)
+    first_name = serializers.StringRelatedField(source='author', read_only=True)
+    last_name = serializers.StringRelatedField(source='author', read_only=True)
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField(source='author', read_only=True)
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Subscription
+        fields = ['email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count'
+                  ]
+    def get_recipes(self, obj):
+        author = get_object_or_404(User, pk=obj.author.id)
+        serializer = ShortRecipeSerializer(author.recipes.all(), many=True)
+        return serializer.data
+
+    def get_is_subscribed(self, obj):
+        # status = Subscription.objects.filter(
+        #     user=self.context.get('request').user,
+        #     author=
+        # )
+        if self.context:
+            user = self.context.get('request').user
+            if obj.user == user:
+                return True
+        if obj:
+            return True
+        return False
+
+    def get_recipes_count(self, obj):
+        author = obj.author
+        recipes = Recipe.objects.filter(author=author)
+        recipes_count = len(recipes)
+        return recipes_count
