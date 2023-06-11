@@ -1,7 +1,7 @@
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 from rest_framework import permissions, status
@@ -15,7 +15,12 @@ from api.views import StandartResultsSetPagination
 
 
 class PostDestroyModelMixin(
-        CreateModelMixin, DestroyModelMixin, GenericViewSet):
+     CreateModelMixin, DestroyModelMixin, GenericViewSet):
+    pass
+
+
+class ListPostDestroyMixin(
+     ListModelMixin, PostDestroyModelMixin):
     pass
 
 
