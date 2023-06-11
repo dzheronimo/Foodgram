@@ -75,9 +75,10 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'SEND_ACTIVATION_EMAIL': False,
 
-    # 'SERIALIZERS': {
-    #     'user': 'recipes.serializers.AuthorSerializer'
-    # }
+    'SERIALIZERS': {
+        'user': 'recipes.serializers.AuthorSerializer',
+        'current_user': 'recipes.serializers.AuthorSerializer',
+    }
 }
 
 TEMPLATES = [
