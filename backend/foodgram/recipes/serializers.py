@@ -172,7 +172,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         if self.context:
             user = self.context['request'].user
-            favorites = obj.is_favorite.all()
+            favorites = obj.is_favorited.all()
             if user.is_authenticated and user in favorites:
                 return True
         return False
