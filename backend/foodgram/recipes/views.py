@@ -1,4 +1,5 @@
 from django.db.models import F
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
@@ -108,19 +109,44 @@ class RecipeViewSet(ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    def ingredients_to_list(self, carts):
+        """Возвращает словарь со списком ингредиентов и количеством"""
+        recipes = [cart.recipe for cart in carts]
+        all_ingredients = Ingredient.objects.all()
+        amount_ingredients = [0] * max([ingredient.id for ingredient in all_ingredients])
+        for recipe in recipes:
+            ingredient_amount = IngredientAmountRecipe.objects.filter(recipe=recipe)
+            for ingredient in ingredient_amount:
+                amount_ingredients[ingredient.ingredient.id] = ingredient.amount
+
+        to_response = {}
+
+        for id_ingredient in range(len(amount_ingredients)):
+            ingredient = Ingredient.objects.filter(id=id_ingredient)
+
+            if ingredient.exists():
+                to_response[
+                    ingredient.first().name] = (f'{amount_ingredients[id_ingredient]} '
+                                                f'{ingredient.first().measurement_unit}')
+        return to_response
+
     @action(detail=False,
             methods=['GET', ])
     def download_shopping_cart(self, request):
         user = request.user
-        cart = ShoppingCart.objects.filter(
+        carts = ShoppingCart.objects.filter(
             user=user
         )
-        if cart.exists():
-            with open('shopping_cart.txt', mode='w') as file:
-                writer = file.write
-                writer('lkefvelvmer')
-            return Response({"ad": "wef"})
 
+        if carts.exists():
+            shopping_list = self.ingredients_to_list(carts)
+            file_name = f'{self.request.user}'
+            with open(f'{file_name}_shopping_cart.txt', mode='w') as file:
+                writer = file.write
+                writer('\n'.join(
+                    f'◯ {name} - {amount}' for name, amount
+                    in shopping_list.items()))
+            return FileResponse(open(f'{file_name}_shopping_cart.txt', mode='rb'))
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
