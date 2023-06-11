@@ -216,16 +216,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         fields = ['email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count'
                   ]
+
     def get_recipes(self, obj):
         author = get_object_or_404(User, pk=obj.author.id)
         serializer = ShortRecipeSerializer(author.recipes.all(), many=True)
         return serializer.data
 
     def get_is_subscribed(self, obj):
-        # status = Subscription.objects.filter(
-        #     user=self.context.get('request').user,
-        #     author=
-        # )
         if self.context:
             user = self.context.get('request').user
             if obj.user == user:
