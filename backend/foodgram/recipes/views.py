@@ -27,7 +27,7 @@ class ListPostDestroyMixin(
 class ListTagViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = ListTagSerializer
-    pagination_class = StandartResultsSetPagination
+    # pagination_class = StandartResultsSetPagination
     permission_classes = [permissions.AllowAny, ]
 
 
