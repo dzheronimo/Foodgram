@@ -54,7 +54,7 @@ class RecipeViewSet(ModelViewSet):
         if request.method == 'POST':
             if favorited.exists():
                 return Response(
-                    {"is_favorited": "Рецепт уже находится в избранном"},
+                    {"errors": "Рецепт уже находится в избранном"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             FavoriteRecipes.objects.create(user=user, recipe=recipe)
@@ -69,7 +69,7 @@ class RecipeViewSet(ModelViewSet):
                     status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response(
-                    {"is_favorited": "Рецепт не найден в списке избранных."},
+                    {"errors": "Рецепт не найден в списке избранных."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
