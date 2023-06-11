@@ -45,7 +45,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag, related_name='recipes')
     cooking_time = models.IntegerField()
     pub_date = models.DateTimeField(auto_now_add=True)
-    is_favorite = models.ManyToManyField(User, through='FavoriteRecipes', related_name='favorites')
+    is_favorited = models.ManyToManyField(User, through='FavoriteRecipes', related_name='favorites')
     is_in_shopping_cart = models.ManyToManyField(User, through='ShoppingCart', related_name='cart')
 
     class Meta:
