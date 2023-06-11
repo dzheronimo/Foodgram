@@ -7,8 +7,7 @@ from rest_framework_simplejwt.token_blacklist.models import (
 
 from api.views import StandartResultsSetPagination
 
-from djoser.views import UserViewSet
-
 
 class PaginatedUserViewSet(UserViewSet):
     pagination_class = StandartResultsSetPagination
+    serializer_class = AuthorSerializer
