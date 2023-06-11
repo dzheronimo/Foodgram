@@ -12,7 +12,6 @@ from users.models import User
 
 class PaginatedUserViewSet(UserViewSet):
     pagination_class = StandartResultsSetPagination
-    serializer_class = AuthorSerializer
 
     @action(detail=False,
             methods=['GET', ]
@@ -28,9 +27,10 @@ class PaginatedUserViewSet(UserViewSet):
     def subscribe(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
-        if user is author:
+        if user == author:
             return Response(
-                {"errors": "Нельзя подписаться на себя!"}
+                {"errors": "Нельзя подписаться на себя!"},
+                status=status.HTTP_400_BAD_REQUEST
             )
         subscription = Subscription.objects.filter(
             user=user,
