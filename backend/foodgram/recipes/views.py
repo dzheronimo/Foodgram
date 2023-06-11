@@ -1,6 +1,7 @@
 from django.db.models import F
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
 from rest_framework.response import Response
@@ -41,6 +42,8 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = StandartResultsSetPagination
+    filter_backends = [DjangoFilterBackend, ]
+    filterset_fields = ['is_favorited', 'author', 'tags']
     permission_classes = [permissions.AllowAny, ]
 
     @action(detail=True,
