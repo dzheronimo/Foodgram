@@ -15,9 +15,22 @@ from users.models import User
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['email', 'id', 'username', 'first_name', 'last_name']
+        fields = ['email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed']
+
+    def get_is_subscribed(self, obj):
+        if self.context:
+            user = self.context.get('request').user
+            subscription = Subscription.objects.filter(
+                user=user,
+                author=obj
+            )
+            if subscription.exists():
+                return True
+            return False
 
 
 class ListTagSerializer(serializers.ModelSerializer):
