@@ -1,10 +1,6 @@
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.token_blacklist.models import (
-    OutstandingToken, BlacklistedToken
-)
+from djoser.views import UserViewSet
 
+from recipes.serializers import AuthorSerializer
 from api.views import StandartResultsSetPagination
 
 
