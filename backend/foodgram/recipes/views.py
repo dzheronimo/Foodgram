@@ -138,8 +138,8 @@ class SubscriptionViewSet(ModelViewSet):
             )
     def subscriptions(self, request):
         subscriptions = self.queryset.filter(user=request.user)
-        serializer = self.serializer_class(subscriptions)
-        return Response({"aaaa":"wefwef"}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(subscriptions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True,
             methods=['POST', 'DELETE', ]
