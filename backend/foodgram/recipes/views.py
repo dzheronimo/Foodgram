@@ -155,7 +155,7 @@ class SubscriptionViewSet(ModelViewSet):
         if request.method == 'POST':
             if subscription.exists():
                 return Response(
-                    {"is_subscribed": "Вы уже подписаны на этого автора"},
+                    {"errors": "Вы уже подписаны на этого автора"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             new_subscription = Subscription.objects.create(
@@ -168,11 +168,11 @@ class SubscriptionViewSet(ModelViewSet):
         if request.method == 'DELETE':
             if not subscription.exists():
                 return Response(
-                    {"is_subscribed": "Вы не подписаны на этого автора"},
+                    {"errors": "Вы не подписаны на этого автора"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             subscription.delete()
             return Response(
-                {"is_subscribed": "Вы успешно отписаны"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"errors": "Вы успешно отписаны"},
+                status=status.HTTP_204_NO_CONTENT
             )
