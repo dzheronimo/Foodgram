@@ -46,7 +46,7 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField()
     pub_date = models.DateTimeField(auto_now_add=True)
     is_favorite = models.ManyToManyField(User, through='FavoriteRecipes', related_name='favorites')
-    is_in_shopping_cart = models.ManyToManyField(User, through='CartRecipes', related_name='cart')
+    is_in_shopping_cart = models.ManyToManyField(User, through='ShoppingCart', related_name='cart')
 
     class Meta:
         ordering = ['-pub_date']
@@ -71,9 +71,20 @@ class FavoriteRecipes(models.Model):
             )
         ]
 
-class CartRecipes(models.Model):
+
+class ShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='in_carts')
+    pub_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-pub_date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='user_cart_recipe'
+            )
+        ]
 
 
 class IngredientAmountRecipe(models.Model):
