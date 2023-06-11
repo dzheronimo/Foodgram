@@ -7,7 +7,7 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelV
 from rest_framework import permissions, status
 
 from users.models import User
-from .models import Tag, Recipe, Ingredient, FavoriteRecipes, Subscription
+from .models import Tag, Recipe, Ingredient, FavoriteRecipes, Subscription, ShoppingCart
 from .serializers import (ListTagSerializer, IngredientSerializer, RecipeSerializer, FavoriteRecipeSerializer,
                           ShortRecipeSerializer, SubscriptionSerializer
                           )
@@ -72,6 +72,56 @@ class RecipeViewSet(ModelViewSet):
                     {"is_favorited": "Рецепт не найден в списке избранных."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+    @action(detail=True,
+            methods=['POST', 'DELETE', ],
+            permission_classes = [permissions.IsAuthenticated, ])
+    def shopping_cart(self, request, pk):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=pk)
+
+        if request.method == 'POST' and recipe:
+            cart, _ = ShoppingCart.objects.get_or_create(
+                user=user,
+                recipe=recipe
+            )
+            if not _:
+                return Response(
+                    {"errors": "Ингредиенты рецепта уже находятся"
+                               "в списке покупок."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = ShortRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        current_cart = ShoppingCart.objects.filter(
+            user=user,
+            recipe=recipe
+        )
+        if current_cart.exists():
+            current_cart.delete()
+
+            return Response(
+                {"shopping_cart": "Ингредиенты рецепты удалены"
+                                  "из списка покупок"},
+                status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"errors": "Ингредиенты рецепта не находятся в списке покупок"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    @action(detail=False,
+            methods=['GET', ])
+    def download_shopping_cart(self, request):
+        user = request.user
+        cart = ShoppingCart.objects.filter(
+            user=user
+        )
+        if cart.exists():
+            with open('shopping_cart.txt', mode='w') as file:
+                writer = file.write
+                writer('lkefvelvmer')
+            return Response({"ad": "wef"})
+
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
