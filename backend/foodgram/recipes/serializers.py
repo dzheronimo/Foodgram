@@ -1,11 +1,8 @@
 import base64
 
 from django.core.files.base import ContentFile
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Count, Max, F
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from pytils.translit import slugify
 
 from .models import (
     Tag, Ingredient, Recipe, IngredientAmountRecipe,
@@ -34,15 +31,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class ListTagSerializer(serializers.ModelSerializer):
-    slug = serializers.SerializerMethodField()
 
     class Meta:
         model = Tag
         fields = ['id', 'name', 'color', 'slug']
-
-    def get_slug(self, obj):
-        slug = slugify(obj.name)
-        return slug
 
 
 class Base64ImageField(serializers.ImageField):
@@ -56,52 +48,40 @@ class Base64ImageField(serializers.ImageField):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    # amount = serializers.SerializerMethodField()
-    # amount = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.annotate(amount=Max('amount_ingredient__amount')))
     class Meta:
         model = Ingredient
         fields = ['id', 'name', 'measurement_unit']
 
 
 class IngredientAmountRecipeSerializer(serializers.ModelSerializer):
-    # id = IngredientSerializer(many=True)
-    # name = IngredientSerializer(many=True)
-    # measurement_unit = IngredientSerializer(many=True)
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    measurement_unit = serializers.CharField()
-
-    # amount = serializers.PrimaryKeyRelatedField(source='recipe', queryset=Recipe.objects.all())
-
-    def get_amount(self, obj):
-        recipe = obj.recipes3
-        return obj
+    id = serializers.IntegerField(source='ingredient.id')
+    name = serializers.CharField(source='ingredient.name')
+    measurement_unit = serializers.CharField(source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientAmountRecipe
-        fields = ['id', 'name', 'measurement_unit']
+        fields = ['id', 'name', 'measurement_unit', 'amount', ]
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
-    # name = serializers.StringRelatedField(read_only=True)
-    # cooking_time = serializers.ReadOnlyField()
-    # id = serializers.ReadOnlyField()
-    # image = serializers.ReadOnlyField()
     class Meta:
         model = Recipe
         fields = ['id', 'name', 'image', 'cooking_time']
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    tags = ListTagSerializer(many=True, read_only=True)
-    author = AuthorSerializer(read_only=True)
-    ingredients = IngredientAmountRecipeSerializer(many=True, read_only=True)
-    # ingredients = IngredientAmountRecipeSerializer(source='ingredientamountrecipe_set', many=True, read_only=True)
+    name = serializers.CharField()
+    tags = ListTagSerializer(many=True)
+    author = AuthorSerializer()
+    image = Base64ImageField()
+    text = serializers.CharField()
+    cooking_time = serializers.IntegerField()
+    ingredients = IngredientAmountRecipeSerializer(source='amount_ingredient', many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
-        model = Recipe
+        model = IngredientAmountRecipe
         fields = ['id', 'tags', 'author', 'ingredients', 'is_favorited',
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time']
