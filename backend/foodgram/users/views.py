@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -14,7 +14,8 @@ class PaginatedUserViewSet(UserViewSet):
     pagination_class = StandartResultsSetPagination
 
     @action(detail=False,
-            methods=['GET', ]
+            methods=['GET', ],
+            permission_classes=[permissions.IsAuthenticated, ]
             )
     def subscriptions(self, request):
         subscriptions = Subscription.objects.filter(user=request.user)
@@ -22,7 +23,8 @@ class PaginatedUserViewSet(UserViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True,
-            methods=['POST', 'DELETE', ]
+            methods=['POST', 'DELETE', ],
+            permission_classes=[permissions.IsAuthenticated, ]
             )
     def subscribe(self, request, id):
         user = request.user
