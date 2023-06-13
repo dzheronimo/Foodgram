@@ -44,11 +44,11 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = StandartResultsSetPagination
     filter_backends = [DjangoFilterBackend, ]
     filterset_fields = ['is_favorited', 'author', 'tags']
-    permission_classes = [permissions.AllowAny, ]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
 
     @action(detail=True,
             methods=['POST', 'DELETE'],
-            permission_classes=[permissions.AllowAny, ])
+            permission_classes=[permissions.IsAuthenticated, ])
     def favorite(self, request, pk=None):
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
@@ -78,7 +78,7 @@ class RecipeViewSet(ModelViewSet):
 
     @action(detail=True,
             methods=['POST', 'DELETE', ],
-            permission_classes = [permissions.IsAuthenticated, ])
+            permission_classes=[permissions.IsAuthenticated, ])
     def shopping_cart(self, request, pk):
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
@@ -134,7 +134,8 @@ class RecipeViewSet(ModelViewSet):
         return to_response
 
     @action(detail=False,
-            methods=['GET', ])
+            methods=['GET', ],
+            permission_classes=[permissions.IsAuthenticated, ])
     def download_shopping_cart(self, request):
         user = request.user
         carts = ShoppingCart.objects.filter(
