@@ -8,8 +8,6 @@ router = DefaultRouter()
 router.register('tags', ListTagViewSet)
 router.register('recipes', RecipeViewSet, basename='recipes')
 router.register('ingredients', IngredientsViewSet)
-router.register('ingredients/(?P<id>\d+)', IngredientsViewSet)
-# router.register('users', SubscriptionViewSet, basename='subscriptions')
 
 
 urlpatterns = [
