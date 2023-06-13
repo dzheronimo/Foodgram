@@ -18,7 +18,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(verbose_name='Ингредиент', max_length=200)
     measurement_unit = models.CharField(max_length=200)
 
     class Meta:
@@ -41,7 +41,7 @@ class Recipe(models.Model):
     )
     text = models.TextField()
     ingredients = models.ManyToManyField(
-        Ingredient, through='IngredientAmountRecipe', related_name='recipes')
+        Ingredient, through='IngredientAmountRecipe', related_name='recipes', verbose_name='Ингредиенты')
     tags = models.ManyToManyField(Tag, related_name='recipes')
     cooking_time = models.IntegerField()
     pub_date = models.DateTimeField(auto_now_add=True)
@@ -58,7 +58,7 @@ class Recipe(models.Model):
 
 
 class FavoriteRecipes(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='in_favorites')
 
     class Meta:
@@ -71,6 +71,8 @@ class FavoriteRecipes(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.recipe} в избранном'
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -78,6 +80,8 @@ class ShoppingCart(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        verbose_name = 'Корзина покупок'
+        verbose_name_plural = 'Корзины покупок'
         ordering = ['-pub_date']
         constraints = [
             models.UniqueConstraint(
@@ -86,9 +90,11 @@ class ShoppingCart(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'Корзина {self.user.username}'
 
 class IngredientAmountRecipe(models.Model):
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='amount_recipe')
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='amount_recipe', verbose_name='Ингредиент')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='amount_ingredient')
     amount = models.IntegerField()
 
@@ -105,11 +111,13 @@ class IngredientAmountRecipe(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriber')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriber', verbose_name='Подписчик')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions', verbose_name='Автор')
 
     class Meta:
-        verbose_name = 'Подписки'
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
         ordering = ['author']
 
         constraints = [
@@ -118,3 +126,6 @@ class Subscription(models.Model):
                 name='user_author'
             )
         ]
+
+    def __str__(self):
+        return f'{self.user.username} is following {self.author.username}'
