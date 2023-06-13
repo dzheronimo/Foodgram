@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from recipes.models import Subscription
-from recipes.serializers import AuthorSerializer, SubscriptionSerializer
+from recipes.serializers import SubscriptionSerializer
 from api.views import StandartResultsSetPagination
 from users.models import User
 

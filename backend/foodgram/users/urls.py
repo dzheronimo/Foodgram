@@ -13,5 +13,8 @@ router.register(r'users/?P(<id>\d+)', UserViewSet, basename='users_profile')
 urlpatterns = [
     path('auth/token/login/', TokenCreateView.as_view(), name='create_token'),
     path('', include(router.urls)),
-    path('auth/token/logout/', TokenDestroyView.as_view(), name='destroy_token')
+    path(
+        'auth/token/logout/',
+        TokenDestroyView.as_view(),
+        name='destroy_token')
 ]
