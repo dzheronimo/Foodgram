@@ -21,13 +21,14 @@ class AuthorSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         if self.context:
             user = self.context.get('request').user
-            subscription = Subscription.objects.filter(
-                user=user,
-                author=obj
-            )
-            if subscription.exists():
-                return True
-            return False
+            if user.is_authenticated:
+                subscription = Subscription.objects.filter(
+                    user=user,
+                    author=obj
+                )
+                if subscription.exists():
+                    return True
+        return False
 
 
 class ListTagSerializer(serializers.ModelSerializer):
@@ -113,7 +114,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
-
         recipe.tags.set(tags)
         for ingredient in ingredients:
             IngredientAmountRecipe.objects.create(
