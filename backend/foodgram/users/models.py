@@ -1,11 +1,6 @@
-from datetime import datetime, timedelta
-
-import jwt
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin)
 from django.db import models
-
-# from recipes.models import Recipe, FavoriteRecipes, CartRecipes
 
 
 class UserManager(BaseUserManager):
@@ -43,9 +38,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
 
-    # favorite_recipes = models.ManyToManyField(Recipe, through=FavoriteRecipes)
-    # shopping_cart = models.ManyToManyField(Recipe, through=CartRecipess)
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -63,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_full_name(self):
-        return self.first_name and self.last_name
+        return f'{self.first_name} {self.last_name}'
 
     def get_short_name(self):
         return self.first_name
