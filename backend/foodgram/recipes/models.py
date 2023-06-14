@@ -1,4 +1,4 @@
-from django.core.validators import validate_unicode_slug
+from django.core.validators import validate_unicode_slug, MinValueValidator
 from django.db import models
 from users.models import User
 
@@ -9,7 +9,7 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=200, validators=[validate_unicode_slug, ])
 
     class Meta:
-        # ordering = ['name']
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -40,13 +40,19 @@ class Recipe(models.Model):
         default=None
     )
     text = models.TextField()
-    ingredients = models.ManyToManyField(
-        Ingredient, through='IngredientAmountRecipe', related_name='recipes', verbose_name='Ингредиенты')
+    ingredients = models.ManyToManyField(Ingredient,
+                                         through='IngredientAmountRecipe',
+                                         related_name='recipes',
+                                         verbose_name='Ингредиенты')
     tags = models.ManyToManyField(Tag, related_name='recipes')
-    cooking_time = models.IntegerField()
+    cooking_time = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator, ])
     pub_date = models.DateTimeField(auto_now_add=True)
-    is_favorited = models.ManyToManyField(User, through='FavoriteRecipes', related_name='favorites')
-    is_in_shopping_cart = models.ManyToManyField(User, through='ShoppingCart', related_name='cart')
+    favorited = models.ManyToManyField(
+        User, through='FavoriteRecipes', related_name='favorites')
+    in_shopping_cart = models.ManyToManyField(User,
+                                              through='ShoppingCart',
+                                              related_name='cart')
 
     class Meta:
         ordering = ['-pub_date']
@@ -58,8 +64,10 @@ class Recipe(models.Model):
 
 
 class FavoriteRecipes(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='in_favorites')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='in_favorites')
 
     class Meta:
         verbose_name = 'Избранное'
@@ -76,7 +84,8 @@ class FavoriteRecipes(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='in_carts')
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='in_carts')
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -94,9 +103,13 @@ class ShoppingCart(models.Model):
         return f'Корзина {self.user.username}'
 
 class IngredientAmountRecipe(models.Model):
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name='amount_recipe', verbose_name='Ингредиент')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='amount_ingredient')
-    amount = models.IntegerField()
+    ingredient = models.ForeignKey(Ingredient,
+                                   on_delete=models.CASCADE,
+                                   related_name='amount_recipe',
+                                   verbose_name='Ингредиент')
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='amount_ingredient')
+    amount = models.PositiveSmallIntegerField(validators=[MinValueValidator, ])
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -111,8 +124,14 @@ class IngredientAmountRecipe(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriber', verbose_name='Подписчик')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions', verbose_name='Автор')
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='subscriber',
+                             verbose_name='Подписчик')
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               related_name='subscriptions',
+                               verbose_name='Автор')
 
     class Meta:
         verbose_name = 'Подписка'
