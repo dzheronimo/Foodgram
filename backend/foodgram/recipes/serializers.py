@@ -181,23 +181,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return False
 
 
-# Проверить!!!
-class FavoriteRecipeSerializer(serializers.ModelSerializer):
-    user = AuthorSerializer(read_only=True)
-    recipe = RecipeSerializer(read_only=True)
-    name = ShortRecipeSerializer(read_only=True)
-    image = ShortRecipeSerializer(read_only=True)
-    cooking_time = ShortRecipeSerializer(read_only=True)
-
-    class Meta:
-        model = FavoriteRecipes
-        fields = ('user', 'recipe', 'id', 'name', 'image', 'cooking_time')
-
-    def to_representation(self, instance):
-        serializer = ShortRecipeSerializer(instance)
-        return serializer.data
-
-
 class SubscriptionSerializer(serializers.ModelSerializer):
     email = serializers.StringRelatedField(
         source='author', read_only=True)
