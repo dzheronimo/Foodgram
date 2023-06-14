@@ -149,16 +149,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         if 'ingredients' in validated_data:
             IngredientAmountRecipe.objects.filter(recipe=instance).delete()
             ingredients_data = validated_data.pop('ingredients')
+
+            ingredient_recipe_instances = []
             for ingredient in ingredients_data:
                 ingredient_instance = get_object_or_404(
                     Ingredient, pk=ingredient.get('id')
                 )
                 if ingredient_instance:
-                    IngredientAmountRecipe.objects.create(
+                    ingredient_recipe_instances.append(IngredientAmountRecipe(
                         recipe=instance,
                         ingredient=ingredient_instance,
                         amount=ingredient.get('amount')
-                    )
+                    ))
+            IngredientAmountRecipe.objects.bulk_create(ingredient_recipe_instances)
 
         instance.save()
         return instance
