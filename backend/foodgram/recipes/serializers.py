@@ -183,18 +183,18 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     email = serializers.StringRelatedField(
-        source='author', read_only=True)
+        source='author.email', read_only=True)
     id = serializers.PrimaryKeyRelatedField(
-        source='author', read_only=True)
+        source='author.id', read_only=True)
     username = serializers.StringRelatedField(
-        source='author', read_only=True)
+        source='author.username', read_only=True)
     first_name = serializers.StringRelatedField(
-        source='author', read_only=True)
+        source='author.first_name', read_only=True)
     last_name = serializers.StringRelatedField(
-        source='author', read_only=True)
+        source='author.last_name', read_only=True)
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField(
-        source='author', read_only=True)
+        source='author.recipes', read_only=True)
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
