@@ -105,6 +105,12 @@ class RecipeSerializer(serializers.ModelSerializer):
                     {"ingreients": "Можно выбрать только "
                                    "существующий ингредиент!"}
                 )
+        for tag in tags:
+            if not Tag.objects.filter(pk=tag):
+                raise serializers.ValidationError(
+                    {"tags": "Можно выбрать только "
+                                   "существующий тег!"}
+                )
         if not tags:
             raise serializers.ValidationError(
                 {"tags": "Для рецепта требуется минимум один tag"}
