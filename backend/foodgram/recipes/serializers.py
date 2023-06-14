@@ -16,7 +16,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed']
+        fields = ['email', 'id', 'username', 'first_name',
+                  'last_name', 'is_subscribed']
 
     def get_is_subscribed(self, obj):
         if self.context:
@@ -57,7 +58,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientAmountRecipeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name')
-    measurement_unit = serializers.CharField(source='ingredient.measurement_unit')
+    measurement_unit = serializers.CharField(
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientAmountRecipe
@@ -77,7 +79,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     text = serializers.CharField()
     cooking_time = serializers.IntegerField()
-    ingredients = IngredientAmountRecipeSerializer(source='amount_ingredient', many=True, read_only=True)
+    ingredients = IngredientAmountRecipeSerializer(
+        source='amount_ingredient', many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -93,7 +96,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         if not ingredients:
             raise serializers.ValidationError(
-                {"ingredients": "Для рецепта требуется минимум один ингредиент"}
+                {"ingredients": "Для рецепта требуется"
+                                "минимум один ингредиент"}
             )
         for ingredient in ingredients:
             if not Ingredient.objects.filter(pk=ingredient.get('id')):
@@ -128,7 +132,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.image = validated_data.get('image', instance.image)
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get('cooking_time', instance.cooking_time)
+        instance.cooking_time = validated_data.get(
+            'cooking_time', instance.cooking_time
+        )
         instance.image = validated_data.get('image', instance.image)
 
         if 'tags' in validated_data:
@@ -138,7 +144,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             IngredientAmountRecipe.objects.filter(recipe=instance).delete()
             ingredients_data = validated_data.pop('ingredients')
             for ingredient in ingredients_data:
-                ingredient_instance = get_object_or_404(Ingredient, pk=ingredient.get('id'))
+                ingredient_instance = get_object_or_404(
+                    Ingredient, pk=ingredient.get('id')
+                )
                 if ingredient_instance:
                     IngredientAmountRecipe.objects.create(
                         recipe=instance,
@@ -182,13 +190,19 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    email = serializers.StringRelatedField(source='author', read_only=True)
-    id = serializers.PrimaryKeyRelatedField(source='author', read_only=True)
-    username = serializers.StringRelatedField(source='author', read_only=True)
-    first_name = serializers.StringRelatedField(source='author', read_only=True)
-    last_name = serializers.StringRelatedField(source='author', read_only=True)
+    email = serializers.StringRelatedField(
+        source='author', read_only=True)
+    id = serializers.PrimaryKeyRelatedField(
+        source='author', read_only=True)
+    username = serializers.StringRelatedField(
+        source='author', read_only=True)
+    first_name = serializers.StringRelatedField(
+        source='author', read_only=True)
+    last_name = serializers.StringRelatedField(
+        source='author', read_only=True)
     is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField(source='author', read_only=True)
+    recipes = serializers.SerializerMethodField(
+        source='author', read_only=True)
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -214,5 +228,4 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     def get_recipes_count(self, obj):
         author = obj.author
         recipes = Recipe.objects.filter(author=author)
-        recipes_count = len(recipes)
-        return recipes_count
+        return len(recipes)

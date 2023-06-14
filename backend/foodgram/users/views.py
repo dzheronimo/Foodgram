@@ -52,14 +52,13 @@ class PaginatedUserViewSet(UserViewSet):
             serializer = SubscriptionSerializer(new_subscription)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            if not subscription.exists():
-                return Response(
-                    {"errors": "Вы не подписаны на этого автора"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            subscription.delete()
+        if not subscription.exists():
             return Response(
-                {"errors": "Вы успешно отписаны"},
-                status=status.HTTP_204_NO_CONTENT
+                {"errors": "Вы не подписаны на этого автора"},
+                status=status.HTTP_400_BAD_REQUEST
             )
+        subscription.delete()
+        return Response(
+            {"errors": "Вы успешно отписаны"},
+            status=status.HTTP_204_NO_CONTENT
+        )

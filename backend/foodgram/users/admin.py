@@ -23,7 +23,7 @@ class SubscriptionsInline(admin.StackedInline):
 class UserAdmin(admin.ModelAdmin):
     list_filter = ('username', 'email', )
     list_display = ('username', 'email', 'last_name', 'first_name', )
-    list_display_links = ('username', 'email',  'last_name', 'first_name', )
+    list_display_links = ('username', 'email', 'last_name', 'first_name', )
     inlines = [FavoritesInline, ShoppingCartInline, SubscriptionsInline]
 
 

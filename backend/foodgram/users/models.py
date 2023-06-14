@@ -4,7 +4,8 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, first_name, last_name, password=None):
+    def create_user(
+            self, username, email, first_name, last_name, password=None):
         if username is None:
             raise TypeError('У пользователя должен быть username')
 
@@ -19,12 +20,14 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, username, email, password, first_name, last_name):
+    def create_superuser(
+            self, username, email, password, first_name, last_name):
 
         if password is None:
             raise TypeError('У суперпользователя должен быть password')
 
-        user = self.create_user(username, email, password, first_name, last_name)
+        user = self.create_user(
+            username, email, password, first_name, last_name)
         user.is_superuser = True
         user.is_staff = True
         user.save()

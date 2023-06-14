@@ -1,27 +1,31 @@
-from django.db.models import F
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin, DestroyModelMixin, ListModelMixin)
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import (
+    GenericViewSet, ModelViewSet, ReadOnlyModelViewSet)
 from rest_framework import permissions, status
 
-from .models import Tag, Recipe, Ingredient, FavoriteRecipes, ShoppingCart, IngredientAmountRecipe
-from .serializers import (ListTagSerializer, IngredientSerializer, RecipeSerializer, FavoriteRecipeSerializer,
-                          ShortRecipeSerializer, SubscriptionSerializer
+from .models import (Tag, Recipe, Ingredient, FavoriteRecipes,
+                     ShoppingCart, IngredientAmountRecipe
+                     )
+from .serializers import (ListTagSerializer, IngredientSerializer,
+                          RecipeSerializer, ShortRecipeSerializer
                           )
 from api.views import StandartResultsSetPagination
 
 
-class PostDestroyModelMixin(
-     CreateModelMixin, DestroyModelMixin, GenericViewSet):
+class PostDestroyModelMixin(CreateModelMixin,
+                            DestroyModelMixin,
+                            GenericViewSet):
     pass
 
 
-class ListPostDestroyMixin(
-     ListModelMixin, PostDestroyModelMixin):
+class ListPostDestroyMixin(ListModelMixin,
+                           PostDestroyModelMixin):
     pass
 
 
@@ -43,7 +47,7 @@ class RecipeViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = StandartResultsSetPagination
     filter_backends = [DjangoFilterBackend, ]
-    filterset_fields = ['is_favorited', 'author', 'tags']
+    filterset_fields = ['favorited', 'author', 'tags']
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
 
     @action(detail=True,
@@ -64,17 +68,16 @@ class RecipeViewSet(ModelViewSet):
             serializer = ShortRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            if favorited.exists():
-                favorited.delete()
-                return Response(
-                    {"is_favorited": "Рецепт удален из списка избранных."},
-                    status=status.HTTP_204_NO_CONTENT)
-            else:
-                return Response(
-                    {"errors": "Рецепт не найден в списке избранных."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        if favorited.exists():
+            favorited.delete()
+            return Response(
+                {"is_favorited": "Рецепт удален из списка избранных."},
+                status=status.HTTP_204_NO_CONTENT)
+
+        return Response(
+            {"errors": "Рецепт не найден в списке избранных."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(detail=True,
             methods=['POST', 'DELETE', ],
@@ -116,11 +119,16 @@ class RecipeViewSet(ModelViewSet):
         """Возвращает словарь со списком ингредиентов и количеством"""
         recipes = [cart.recipe for cart in carts]
         all_ingredients = Ingredient.objects.all()
-        amount_ingredients = [0] * max([ingredient.id for ingredient in all_ingredients])
+        amount_ingredients = [0] * max(
+            [ingredient.id for ingredient in all_ingredients]
+        )
         for recipe in recipes:
-            ingredient_amount = IngredientAmountRecipe.objects.filter(recipe=recipe)
+            ingredient_amount = IngredientAmountRecipe.objects.filter(
+                recipe=recipe
+            )
             for ingredient in ingredient_amount:
-                amount_ingredients[ingredient.ingredient.id] = ingredient.amount
+                ingredient_id = ingredient.ingredient.id
+                amount_ingredients[ingredient_id] = ingredient.amount
 
         to_response = {}
 
@@ -128,9 +136,9 @@ class RecipeViewSet(ModelViewSet):
             ingredient = Ingredient.objects.filter(id=id_ingredient)
 
             if ingredient.exists():
-                to_response[
-                    ingredient.first().name] = (f'{amount_ingredients[id_ingredient]} '
-                                                f'{ingredient.first().measurement_unit}')
+                to_response[ingredient.first().name] = (
+                    f'{amount_ingredients[id_ingredient]} '
+                    f'{ingredient.first().measurement_unit}')
         return to_response
 
     @action(detail=False,
@@ -150,7 +158,13 @@ class RecipeViewSet(ModelViewSet):
                 writer('\n'.join(
                     f'◯ {name} - {amount}' for name, amount
                     in shopping_list.items()))
-            return FileResponse(open(f'{file_name}_shopping_cart.txt', mode='rb'))
+            return FileResponse(
+                open(f'{file_name}_shopping_cart.txt', mode='rb')
+            )
+        return Response(
+            {"errors": "Список покупок пуст."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
