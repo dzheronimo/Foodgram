@@ -49,6 +49,7 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, ]
     filterset_fields = ['favorited', 'author', 'tags']
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+    http_method_names = ['get', 'post', 'patch', 'delete', ]
 
     @action(detail=True,
             methods=['POST', 'DELETE'],
