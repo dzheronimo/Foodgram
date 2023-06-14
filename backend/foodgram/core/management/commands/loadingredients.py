@@ -25,8 +25,9 @@ class Command(BaseCommand):
             if _:
                 created_ingredients += 1
 
-        self.stdout.write(f'Было получено {processed_ingredients} ингредиентов. \n'
-                          f'Новых создано {created_ingredients} -- [{ext}]', ending='')
+        self.stdout.write(
+            f'Было получено {processed_ingredients} ингредиентов. \n'
+            f'Новых создано {created_ingredients} -- [{ext}]', ending='')
 
     def handle(self, *args, **options):
         parent_dir = os.path.dirname(os.path.abspath(__file__))
