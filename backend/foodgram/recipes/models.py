@@ -47,7 +47,8 @@ class Recipe(models.Model):
                                          verbose_name='Ингредиенты')
     tags = models.ManyToManyField(Tag, related_name='recipes')
     cooking_time = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator, ])
+        validators=[MinValueValidator(limit_value=1),
+                    ])
     pub_date = models.DateTimeField(auto_now_add=True)
     favorited = models.ManyToManyField(
         User, through='FavoriteRecipes', related_name='favorites')
@@ -112,7 +113,9 @@ class IngredientAmountRecipe(models.Model):
                                    verbose_name='Ингредиент')
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='amount_ingredient')
-    amount = models.PositiveSmallIntegerField(validators=[MinValueValidator, ])
+    amount = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(limit_value=1),
+                    ])
 
     class Meta:
         verbose_name = 'Ингредиент'
