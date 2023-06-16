@@ -4,7 +4,6 @@ from djoser.views import UserViewSet, TokenCreateView, TokenDestroyView
 
 from users.views import PaginatedUserViewSet
 
-
 router = DefaultRouter()
 
 router.register('users', PaginatedUserViewSet, basename='users')
