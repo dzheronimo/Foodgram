@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from recipes.models import Subscription
 from recipes.serializers import SubscriptionSerializer
-from api.views import StandartResultsSetPagination
+from api.paginators import StandartResultsSetPagination
 from users.models import User
 
 
@@ -19,6 +19,12 @@ class PaginatedUserViewSet(UserViewSet):
             )
     def subscriptions(self, request):
         subscriptions = Subscription.objects.filter(user=request.user)
+
+        page = self.paginate_queryset(subscriptions)
+        if page is not None:
+            serializer = SubscriptionSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response(serializer.data)
+
         serializer = SubscriptionSerializer(subscriptions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
