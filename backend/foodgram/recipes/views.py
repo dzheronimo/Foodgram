@@ -9,6 +9,7 @@ from rest_framework.viewsets import (
     GenericViewSet, ModelViewSet, ReadOnlyModelViewSet)
 from rest_framework import permissions, status
 
+from .filters import IngredientSearchFilter, RecipeFilter
 from .models import (Tag, Recipe, Ingredient, FavoriteRecipes,
                      ShoppingCart, IngredientAmountRecipe
                      )
@@ -40,6 +41,8 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [permissions.AllowAny, ]
+    filter_backends = [IngredientSearchFilter, ]
+    search_fields = ['^name', ]
 
 
 class RecipeViewSet(ModelViewSet):
@@ -47,7 +50,8 @@ class RecipeViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = StandartResultsSetPagination
     filter_backends = [DjangoFilterBackend, ]
-    filterset_fields = ['favorited', 'author', 'tags']
+    filterset_fields = ['author', ]
+    filterset_class = RecipeFilter
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     http_method_names = ['get', 'post', 'patch', 'delete', ]
 
