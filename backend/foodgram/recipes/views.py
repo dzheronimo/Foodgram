@@ -16,7 +16,7 @@ from .models import (Tag, Recipe, Ingredient, FavoriteRecipes,
 from .serializers import (ListTagSerializer, IngredientSerializer,
                           RecipeSerializer, ShortRecipeSerializer
                           )
-from api.views import StandartResultsSetPagination
+from api.paginators import StandartResultsSetPagination
 
 
 class PostDestroyModelMixin(CreateModelMixin,
