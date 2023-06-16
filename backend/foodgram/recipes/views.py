@@ -133,17 +133,17 @@ class RecipeViewSet(ModelViewSet):
             )
             for ingredient in ingredient_amount:
                 ingredient_id = ingredient.ingredient.id
-                amount_ingredients[ingredient_id] = ingredient.amount
+                amount_ingredients[ingredient_id] += ingredient.amount
 
         to_response = {}
 
         for id_ingredient in range(len(amount_ingredients)):
-            ingredient = Ingredient.objects.filter(id=id_ingredient)
+            if amount_ingredients[id_ingredient]:
+                ingredient = Ingredient.objects.get(id=id_ingredient)
 
-            if ingredient.exists():
-                to_response[ingredient.first().name] = (
+                to_response[ingredient.name] = (
                     f'{amount_ingredients[id_ingredient]} '
-                    f'{ingredient.first().measurement_unit}')
+                    f'{ingredient.measurement_unit}')
         return to_response
 
     @action(detail=False,
