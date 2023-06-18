@@ -30,9 +30,10 @@ class Command(BaseCommand):
             f'Новых создано {created_ingredients} -- [{ext}]', ending='')
 
     def handle(self, *args, **options):
-        parent_dir = os.path.dirname(os.path.abspath(__file__))
-        data_folder = os.path.join(parent_dir.split('backend')[0], 'data')
+        # parent_dir = os.path.dirname(os.path.abspath(__file__))
+        # data_folder = os.path.join(parent_dir.split('backend')[0], 'data')
         filename = 'ingredients'
+        data_folder = '/data/'
         json_path = os.path.join(data_folder, f'{filename}.json')
         csv_path = os.path.join(data_folder, f'{filename}.csv')
         file_exists = os.path.isfile
