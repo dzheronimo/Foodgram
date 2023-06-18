@@ -36,7 +36,7 @@ class Recipe(models.Model):
                                related_name='recipes')
     name = models.CharField(max_length=200)
     image = models.ImageField(
-        upload_to='recipes/images/',
+        upload_to='recipes',
         null=False,
         default=None
     )
