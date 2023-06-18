@@ -55,6 +55,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push to Docker
+        run: |
+          cd backend/
         uses: docker/build-push-action@v2
         with:
           push: true
