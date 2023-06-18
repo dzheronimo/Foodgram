@@ -5,11 +5,11 @@ services:
     image: postgres:13.0-alpine
     volumes:
       - db_value:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
+#    environment:
+#      - POSTGRES_DB=postgres
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#      - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
       - ./.env
   backend:
