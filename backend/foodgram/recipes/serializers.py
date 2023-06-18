@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from .models import (
     Tag, Ingredient, Recipe, IngredientAmountRecipe,
-    FavoriteRecipes, Subscription
+    Subscription
 )
 from users.models import User
 
