@@ -21,6 +21,6 @@ class RecipeFilter(filters.FilterSet):
         if value == 1:
             if name == 'is_in_shopping_cart':
                 return queryset.filter(in_carts__user=self.request.user)
-            elif name == 'is_favorited':
+            if name == 'is_favorited':
                 return queryset.filter(in_favorites__user=self.request.user)
         return queryset

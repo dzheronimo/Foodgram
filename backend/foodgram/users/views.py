@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import status, permissions
+from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from api.paginators import StandartResultsSetPagination
 from recipes.models import Subscription
 from recipes.serializers import SubscriptionSerializer
-from api.paginators import StandartResultsSetPagination
 from users.models import User
 
 
@@ -22,7 +22,8 @@ class PaginatedUserViewSet(UserViewSet):
 
         page = self.paginate_queryset(subscriptions)
         if page is not None:
-            serializer = SubscriptionSerializer(page, many=True, context={"request": request})
+            serializer = SubscriptionSerializer(
+                page, many=True, context={"request": request})
             return self.get_paginated_response(serializer.data)
 
         serializer = SubscriptionSerializer(subscriptions, many=True)

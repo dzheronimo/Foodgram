@@ -45,7 +45,9 @@ class Base64ImageField(serializers.ImageField):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
 
-            data = ContentFile(base64.b64decode(imgstr), name='recipe_image.' + ext)
+            data = ContentFile(
+                base64.b64decode(imgstr), name='recipe_image.' + ext
+            )
         return super().to_internal_value(data)
 
 
@@ -109,7 +111,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             if not Tag.objects.filter(pk=tag):
                 raise serializers.ValidationError(
                     {"tags": "Можно выбрать только "
-                                   "существующий тег!"}
+                             "существующий тег!"}
                 )
         if not tags:
             raise serializers.ValidationError(
@@ -161,7 +163,9 @@ class RecipeSerializer(serializers.ModelSerializer):
                         ingredient=ingredient_instance,
                         amount=ingredient.get('amount')
                     ))
-            IngredientAmountRecipe.objects.bulk_create(ingredient_recipe_instances)
+            IngredientAmountRecipe.objects.bulk_create(
+                ingredient_recipe_instances
+            )
 
         instance.save()
         return instance
@@ -208,7 +212,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         recipes_limit = request.GET.get('recipes_limit')
         if recipes_limit:
-            serializer = ShortRecipeSerializer(author.recipes.all()[:int(recipes_limit)], many=True)
+            serializer = ShortRecipeSerializer(
+                author.recipes.all()[:int(recipes_limit)], many=True)
             return serializer.data
         serializer = ShortRecipeSerializer(author.recipes.all(), many=True)
         return serializer.data

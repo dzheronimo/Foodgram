@@ -1,22 +1,23 @@
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.mixins import (
     CreateModelMixin, DestroyModelMixin, ListModelMixin)
 from rest_framework.response import Response
 from rest_framework.viewsets import (
     GenericViewSet, ModelViewSet, ReadOnlyModelViewSet)
-from rest_framework import permissions, status
+
+from api.paginators import StandartResultsSetPagination
 
 from .filters import IngredientSearchFilter, RecipeFilter
-from .models import (Tag, Recipe, Ingredient, FavoriteRecipes,
-                     ShoppingCart, IngredientAmountRecipe
+from .models import (FavoriteRecipes, Ingredient, IngredientAmountRecipe,
+                     Recipe, ShoppingCart, Tag
                      )
 from .serializers import (ListTagSerializer, IngredientSerializer,
                           RecipeSerializer, ShortRecipeSerializer
                           )
-from api.paginators import StandartResultsSetPagination
 
 
 class PostDestroyModelMixin(CreateModelMixin,
