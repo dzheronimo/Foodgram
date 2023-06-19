@@ -1,12 +1,17 @@
 from django.contrib import admin
 
 from .models import (
-    Tag, Recipe, Ingredient, IngredientAmountRecipe, FavoriteRecipes
+    Tag, Recipe, Ingredient, IngredientAmountRecipe, FavoriteRecipes, ShoppingCart, Subscription
 )
 
 
 class IngredientAmountRecipeInline(admin.TabularInline):
     model = IngredientAmountRecipe
+    extra = 1
+
+
+class TagInline(admin.TabularInline):
+    model = Tag
     extra = 1
 
 
@@ -16,11 +21,26 @@ class FavoriteRecipesInline(admin.TabularInline):
     extra = 1
 
 
+class SubscriptionInline(admin.TabularInline):
+    model = Subscription
+    extra = 1
+
+
+class ShoppingCartInline(admin.TabularInline):
+    model = ShoppingCart
+    extra = 1
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags', )
     list_display = ('name', 'author', )
     list_display_links = ('name', 'author', )
-    inlines = [FavoriteRecipesInline, IngredientAmountRecipeInline, ]
+    inlines = [FavoriteRecipesInline,
+               IngredientAmountRecipeInline,
+               ShoppingCartInline,
+               TagInline,
+               SubscriptionInline,
+               ]
 
     readonly_fields = ('id', 'favorited_count', )
     # fieldsets = (
@@ -45,3 +65,5 @@ class IngredientAdmin(admin.ModelAdmin):
 admin.site.register(Tag)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(FavoriteRecipes)
+admin.site.register(ShoppingCart)
