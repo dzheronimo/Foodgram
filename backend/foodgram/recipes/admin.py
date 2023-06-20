@@ -12,19 +12,9 @@ class IngredientAmountRecipeInline(admin.TabularInline):
     extra = 1
 
 
-class TagInline(admin.TabularInline):
-    model = Tag
-    extra = 1
-
-
 class FavoriteRecipesInline(admin.TabularInline):
     model = FavoriteRecipes
     fk_name = ''
-    extra = 1
-
-
-class SubscriptionInline(admin.TabularInline):
-    model = Subscription
     extra = 1
 
 
@@ -34,14 +24,12 @@ class ShoppingCartInline(admin.TabularInline):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_filter = ('name', 'author', 'tags', )
+    list_filter = ('name', 'author', )
     list_display = ('name', 'author', )
     list_display_links = ('name', 'author', )
     inlines = [FavoriteRecipesInline,
                IngredientAmountRecipeInline,
                ShoppingCartInline,
-               TagInline,
-               SubscriptionInline,
                ]
 
     readonly_fields = ('id', 'favorited_count', )
