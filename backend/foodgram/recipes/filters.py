@@ -19,7 +19,7 @@ class RecipeFilter(filters.FilterSet):
         fields = ['author', 'tags', 'is_in_shopping_cart', 'is_favorited']
 
     def boolean_to_enum(self, queryset, name, value):
-        user = self.request.use
+        user = self.request.user
         if value and user.is_authenticated:
             if name == 'is_in_shopping_cart':
                 return queryset.filter(in_carts__user=self.request.user)
