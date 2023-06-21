@@ -101,18 +101,28 @@ class RecipeSerializer(serializers.ModelSerializer):
                 {"ingredients": "Для рецепта требуется"
                                 "минимум один ингредиент"}
             )
-        for ingredient in ingredients:
-            if not ingredient.amount:
-                raise serializers.ValidationError(
-                    {"ingredients": "Отрицательное значение "
-                                    "не доступно!"}
-                )
+        unique_ingredients_list = []
         for ingredient in ingredients:
             if not Ingredient.objects.filter(pk=ingredient.get('id')):
                 raise serializers.ValidationError(
                     {"ingreients": "Можно выбрать только "
                                    "существующий ингредиент!"}
                 )
+
+            if ingredient in unique_ingredients_list:
+                raise serializers.ValidationError(
+                    {"ingredients": "Ингредиент может быть использован "
+                                    "только один раз, для увеличения "
+                                    "количества измените "
+                                    "соответствующее значение!"}
+                )
+            unique_ingredients_list.append(ingredient)
+
+            if int(ingredient.get('amount')) <= 0:
+                raise serializers.ValidationError(
+                    {"ingredients": "Минимально количество = 1"}
+                )
+
         for tag in tags:
             if not Tag.objects.filter(pk=tag):
                 raise serializers.ValidationError(
@@ -218,7 +228,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request:
             serializer = ShortRecipeSerializer(
-                author.recipes.all()[:int(request.GET.get('recipes_limit'))], many=True)
+                author.recipes.all()[:int(
+                    request.GET.get('recipes_limit'))], many=True)
             return serializer.data
         serializer = ShortRecipeSerializer(author.recipes.all(), many=True)
         return serializer.data
