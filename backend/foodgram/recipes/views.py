@@ -52,7 +52,7 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = StandartResultsSetPagination
     filter_backends = [DjangoFilterBackend, ]
     filterset_class = RecipeFilter
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     http_method_names = ['get', 'post', 'patch', 'delete', ]
 
     @action(detail=True,
