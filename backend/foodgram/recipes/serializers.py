@@ -102,6 +102,12 @@ class RecipeSerializer(serializers.ModelSerializer):
                                 "минимум один ингредиент"}
             )
         for ingredient in ingredients:
+            if not ingredient.amount:
+                raise serializers.ValidationError(
+                    {"ingredients": "Отрицательное значение "
+                                    "не доступно!"}
+                )
+        for ingredient in ingredients:
             if not Ingredient.objects.filter(pk=ingredient.get('id')):
                 raise serializers.ValidationError(
                     {"ingreients": "Можно выбрать только "
