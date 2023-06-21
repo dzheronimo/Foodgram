@@ -6,8 +6,8 @@ from users.views import PaginatedUserViewSet
 
 router = DefaultRouter()
 
-router.register('users', PaginatedUserViewSet, basename='users')
-router.register(r'users/?P(<id>\d+)', UserViewSet, basename='users_profile')
+router.register(r'users/?P(<id>\d+)', PaginatedUserViewSet, basename='users_profile')
+router.register('users', PaginatedUserViewSet)
 
 urlpatterns = [
     path('auth/token/login/', TokenCreateView.as_view(), name='create_token'),
