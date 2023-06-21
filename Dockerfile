@@ -2,6 +2,7 @@ FROM python:3.9-slim
 WORKDIR /data
 COPY data .
 WORKDIR /app
+COPY infra/fixtures.json fixtures.json
 COPY requirements.txt requirements.txt
 RUN python3 -m pip install --upgrade pip
 RUN pip3 install -r /app/requirements.txt --no-cache-dir
