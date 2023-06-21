@@ -197,9 +197,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         if self.context:
             user = self.context['request'].user
-            cart = obj.in_carts.filter(user=user)
-            if cart:
-                return True
+            if not user.is_anonymous:
+                cart = obj.in_carts.filter(user=user)
+                if cart:
+                    return True
         return False
 
 
