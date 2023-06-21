@@ -195,9 +195,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_in_shopping_cart(self, obj):
-        cart = obj.in_shopping_cart.all()
-        if cart:
-            return True
+        if self.context:
+            user = self.context['request'].user
+            cart = obj.in_carts.filter(user=user)
+            if cart:
+                return True
         return False
 
 
