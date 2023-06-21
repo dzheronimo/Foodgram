@@ -104,6 +104,7 @@ class RecipeViewSet(ModelViewSet):
                 )
             serializer = ShortRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         current_cart = ShoppingCart.objects.filter(
             user=user,
             recipe=recipe
