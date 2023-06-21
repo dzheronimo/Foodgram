@@ -43,7 +43,7 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = [permissions.AllowAny, ]
     filter_backends = [IngredientSearchFilter, ]
-    search_fields = ['$name', ]
+    search_fields = ['name', ]
 
 
 class RecipeViewSet(ModelViewSet):
