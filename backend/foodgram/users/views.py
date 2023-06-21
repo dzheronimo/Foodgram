@@ -12,6 +12,7 @@ from users.models import User
 
 class PaginatedUserViewSet(UserViewSet):
     pagination_class = StandartResultsSetPagination
+    permission_classes = [permissions.IsAuthenticated, ]
 
     @action(detail=False,
             methods=['GET', ],
