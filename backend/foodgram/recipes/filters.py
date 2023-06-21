@@ -9,13 +9,14 @@ class IngredientSearchFilter(SearchFilter):
 
 
 class RecipeFilter(filters.FilterSet):
-    tags = filters.CharFilter(field_name='tags__slug')
+    author = filters.CharFilter(field_name='author__id')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     is_favorited = filters.BooleanFilter(method='boolean_to_enum')
     is_in_shopping_cart = filters.BooleanFilter(method='boolean_to_enum')
 
     class Meta:
         model = Recipe
-        fields = ['tags', 'is_in_shopping_cart', 'is_favorited']
+        fields = ['author', 'tags', 'is_in_shopping_cart', 'is_favorited']
 
     def boolean_to_enum(self, queryset, name, value):
         if value == 1:
